@@ -1,0 +1,152 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+:root {
+  --background-dark: #030303;
+  --background-obsidian: #09090b;
+  --card-bg: #0f0f12;
+  --card-bg-dark: #0e0e11;
+  --text-primary: #f4f4f5;
+  --text-secondary: #a1a1aa;
+  
+  /* Triqna Color Palette (Moroccan Emerald & Obsidian Theme) */
+  --color-emerald: #059669;
+  --color-emerald-hover: #10b981;
+  --color-border: rgba(255, 255, 255, 0.06);
+  --color-border-dark: rgba(255, 255, 255, 0.1);
+  
+  /* Status Indicators (Soft Glow Variants) */
+  --status-success: #10b981;
+  --status-warning: #f59e0b;
+  --status-danger: #ef4444;
+}
+
+@theme inline {
+  --color-brand: var(--color-emerald);
+  --color-brand-hover: var(--color-emerald-hover);
+  --color-obsidian: var(--background-obsidian);
+  --color-border: var(--color-border);
+  
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+body {
+  background-color: var(--background-dark);
+  color: var(--text-primary);
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Premium custom scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: var(--background-dark);
+}
+::-webkit-scrollbar-thumb {
+  background: #27272a;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3f3f46;
+}
+
+/* Uber-like interactive micro-actions with Spring Physics */
+.btn-emerald {
+  background: linear-gradient(135deg, var(--color-emerald) 0%, #047857 100%);
+  color: #ffffff;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(5, 150, 105, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-emerald:hover {
+  background: linear-gradient(135deg, var(--color-emerald-hover) 0%, var(--color-emerald) 100%);
+  box-shadow: 0 6px 20px rgba(5, 150, 105, 0.3);
+  transform: translateY(-1px);
+}
+
+.btn-emerald:active {
+  transform: scale(0.96) translateY(0);
+}
+
+/* High-Contrast Card Styles (Refined Obsidian Cards with Glow Borders) */
+.card-uber-white {
+  background-color: var(--card-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.card-uber-white:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(5, 150, 105, 0.15);
+  border-color: rgba(5, 150, 105, 0.25);
+}
+
+.card-uber-white:active {
+  transform: scale(0.985);
+}
+
+/* Input Fields overrides (Modern Obsidian Dark Inputs) */
+.input-uber {
+  background-color: rgba(24, 24, 27, 0.55);
+  color: #ffffff;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.input-uber:focus {
+  background-color: rgba(9, 9, 11, 0.8);
+  border-color: rgba(5, 150, 105, 0.5);
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15);
+  outline: none;
+}
+
+/* Premium Skeleton Loaders */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton-premium {
+  background: linear-gradient(90deg, #18181b 25%, #27272a 50%, #18181b 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite linear;
+}
+
+/* Custom premium status colors */
+.status-badge-pending {
+  color: var(--status-warning);
+  border-color: rgba(245, 158, 11, 0.2);
+  background-color: rgba(245, 158, 11, 0.05);
+}
+.status-badge-confirmed {
+  color: var(--status-success);
+  border-color: rgba(16, 185, 129, 0.2);
+  background-color: rgba(16, 185, 129, 0.05);
+}
+.status-badge-rejected {
+  color: var(--status-danger);
+  border-color: rgba(239, 68, 68, 0.2);
+  background-color: rgba(239, 68, 68, 0.05);
+}
