@@ -87,8 +87,7 @@ export default function SearchRides() {
   // Fetch Rides
   const fetchRides = async () => {
     setLoading(true);
-    // Add artificial delay for premium transition testing
-    await new Promise(resolve => setTimeout(resolve, 800));
+    await new Promise(resolve => setTimeout(resolve, 600));
     try {
       let query = supabase
         .from('rides')
@@ -125,6 +124,7 @@ export default function SearchRides() {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     // Default search date to today's date (local time format YYYY-MM-DD)
     const today = new Date();
@@ -137,6 +137,7 @@ export default function SearchRides() {
   useEffect(() => {
     fetchRides();
   }, [womenOnly]);
+
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     fetchRides();
@@ -172,106 +173,106 @@ export default function SearchRides() {
     <div className="flex flex-col gap-6">
       {/* Title */}
       <div className="flex flex-col gap-1 mt-1">
-        <h1 className="text-3xl font-black tracking-tight bg-gradient-to-br from-white to-neutral-400 bg-clip-text text-transparent leading-none">Find a Ride</h1>
-        <p className="text-[10px] text-neutral-400 font-extrabold uppercase tracking-wider">Morocco Intercity Cost Sharing</p>
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-900 leading-tight">Find a Ride</h1>
+        <p className="text-xs sm:text-sm text-slate-500 font-medium">Safe & legal intercity carpooling across Morocco</p>
       </div>
 
-      {/* Search Widget - Stripe Elements Style Card */}
-      <form onSubmit={handleSearchSubmit} className="card-uber-white p-0 overflow-hidden flex flex-col">
+      {/* Airbnb-Inspired Responsive Search Bar (Vertical on mobile, Horizontal Segmented on Desktop) */}
+      <form onSubmit={handleSearchSubmit} className="card-airbnb p-0 overflow-hidden flex flex-col md:flex-row md:items-center md:divide-x md:divide-slate-200 shadow-md border border-slate-200">
         {/* Origin */}
-        <div className="px-5 py-4 border-b border-neutral-900/60 flex flex-col gap-1.5 hover:bg-neutral-900/10 transition-colors">
-          <label className="text-[9px] uppercase font-extrabold tracking-widest text-neutral-500">Departing From</label>
+        <div className="px-5 py-3.5 border-b md:border-b-0 border-slate-100 flex-1 flex flex-col gap-1 hover:bg-slate-50/70 transition-colors">
+          <label className="text-[10px] uppercase font-bold tracking-wider text-slate-400">Leaving from</label>
           <div className="relative flex items-center">
-            <MapPin className="absolute left-0 w-4 h-4 text-neutral-500" />
+            <MapPin className="absolute left-0 w-4 h-4 text-blue-600" />
             <select 
               value={origin} 
               onChange={(e) => setOrigin(e.target.value)}
-              className="w-full bg-transparent text-white pl-6 pr-8 py-1.5 text-sm font-semibold outline-none appearance-none cursor-pointer"
+              className="w-full bg-transparent text-slate-900 pl-6 pr-8 py-1 text-sm font-semibold outline-none appearance-none cursor-pointer"
             >
-              <option value="" className="bg-[#0f0f12] text-neutral-400">Choose city...</option>
-              {MOROCCAN_CITIES.map(c => <option key={c} value={c} className="bg-[#0f0f12] text-white">{c}</option>)}
+              <option value="" className="text-slate-400">Select city...</option>
+              {MOROCCAN_CITIES.map(c => <option key={c} value={c} className="text-slate-900">{c}</option>)}
             </select>
-            <div className="absolute right-0 pointer-events-none border-l-4 border-r-4 border-t-4 border-transparent border-t-neutral-500 w-0 h-0" />
+            <div className="absolute right-0 pointer-events-none border-l-4 border-r-4 border-t-4 border-transparent border-t-slate-400 w-0 h-0" />
           </div>
         </div>
 
         {/* Destination */}
-        <div className="px-5 py-4 border-b border-neutral-900/60 flex flex-col gap-1.5 hover:bg-neutral-900/10 transition-colors">
-          <label className="text-[9px] uppercase font-extrabold tracking-widest text-neutral-500">Arriving In</label>
+        <div className="px-5 py-3.5 border-b md:border-b-0 border-slate-100 flex-1 flex flex-col gap-1 hover:bg-slate-50/70 transition-colors">
+          <label className="text-[10px] uppercase font-bold tracking-wider text-slate-400">Going to</label>
           <div className="relative flex items-center">
-            <MapPin className="absolute left-0 w-4 h-4 text-[var(--color-emerald)]" />
+            <MapPin className="absolute left-0 w-4 h-4 text-slate-400" />
             <select 
               value={destination} 
               onChange={(e) => setDestination(e.target.value)}
-              className="w-full bg-transparent text-white pl-6 pr-8 py-1.5 text-sm font-semibold outline-none appearance-none cursor-pointer"
+              className="w-full bg-transparent text-slate-900 pl-6 pr-8 py-1 text-sm font-semibold outline-none appearance-none cursor-pointer"
             >
-              <option value="" className="bg-[#0f0f12] text-neutral-400">Choose city...</option>
-              {MOROCCAN_CITIES.map(c => <option key={c} value={c} className="bg-[#0f0f12] text-white">{c}</option>)}
+              <option value="" className="text-slate-400">Select city...</option>
+              {MOROCCAN_CITIES.map(c => <option key={c} value={c} className="text-slate-900">{c}</option>)}
             </select>
-            <div className="absolute right-0 pointer-events-none border-l-4 border-r-4 border-t-4 border-transparent border-t-neutral-500 w-0 h-0" />
+            <div className="absolute right-0 pointer-events-none border-l-4 border-r-4 border-t-4 border-transparent border-t-slate-400 w-0 h-0" />
           </div>
         </div>
 
-        {/* Date and Seats Split */}
-        <div className="grid grid-cols-2 border-b border-neutral-900/60">
-          <div className="px-5 py-4 border-r border-neutral-900/60 flex flex-col gap-1.5 hover:bg-neutral-900/10 transition-colors">
-            <label className="text-[9px] uppercase font-extrabold tracking-widest text-neutral-500">Date</label>
-            <div className="relative flex items-center">
-              <Calendar className="absolute left-0 w-4 h-4 text-neutral-500" />
-              <input 
-                type="date" 
-                value={date} 
-                onChange={(e) => setDate(e.target.value)}
-                className="w-full bg-transparent text-white pl-6 pr-1 py-1.5 text-sm font-semibold outline-none [color-scheme:dark]" 
-              />
-            </div>
+        {/* Date */}
+        <div className="px-5 py-3.5 border-b md:border-b-0 border-slate-100 flex-1 flex flex-col gap-1 hover:bg-slate-50/70 transition-colors">
+          <label className="text-[10px] uppercase font-bold tracking-wider text-slate-400">Date</label>
+          <div className="relative flex items-center">
+            <Calendar className="absolute left-0 w-4 h-4 text-slate-400" />
+            <input 
+              type="date" 
+              value={date} 
+              onChange={(e) => setDate(e.target.value)}
+              className="w-full bg-transparent text-slate-900 pl-6 pr-1 py-1 text-sm font-semibold outline-none" 
+            />
           </div>
-          <div className="px-5 py-4 flex flex-col gap-1.5 hover:bg-neutral-900/10 transition-colors">
-            <label className="text-[9px] uppercase font-extrabold tracking-widest text-neutral-500">Seats</label>
-            <div className="relative flex items-center">
-              <User className="absolute left-0 w-4 h-4 text-neutral-500" />
-              <input 
-                type="number" 
-                min={1} 
-                max={6}
-                value={seatsNeeded} 
-                onChange={(e) => setSeatsNeeded(parseInt(e.target.value) || 1)}
-                className="w-full bg-transparent text-white pl-6 pr-1 py-1.5 text-sm font-semibold outline-none" 
-              />
-            </div>
+        </div>
+
+        {/* Seats */}
+        <div className="px-5 py-3.5 border-b md:border-b-0 border-slate-100 w-full md:w-32 flex flex-col gap-1 hover:bg-slate-50/70 transition-colors">
+          <label className="text-[10px] uppercase font-bold tracking-wider text-slate-400">Seats</label>
+          <div className="relative flex items-center">
+            <User className="absolute left-0 w-4 h-4 text-slate-400" />
+            <input 
+              type="number" 
+              min={1} 
+              max={6}
+              value={seatsNeeded} 
+              onChange={(e) => setSeatsNeeded(parseInt(e.target.value) || 1)}
+              className="w-full bg-transparent text-slate-900 pl-6 pr-1 py-1 text-sm font-semibold outline-none" 
+            />
           </div>
         </div>
 
         {/* Women Only & Submit Button */}
-        <div className="px-5 py-3.5 flex items-center justify-between bg-[#0d0d10]/40">
-          <label className="flex items-center gap-2 text-xs text-neutral-300 font-bold select-none cursor-pointer">
+        <div className="px-5 py-3.5 md:py-2.5 flex items-center justify-between md:gap-4 bg-slate-50/60 md:bg-transparent">
+          <label className="flex items-center gap-2 text-xs text-slate-700 font-semibold select-none cursor-pointer whitespace-nowrap">
             <input 
               type="checkbox" 
               checked={womenOnly}
               onChange={(e) => setWomenOnly(e.target.checked)}
-              className="w-4 h-4 accent-[var(--color-emerald)] rounded border-neutral-700 bg-neutral-900 cursor-pointer"
+              className="w-4 h-4 accent-blue-600 rounded border-slate-300 cursor-pointer"
             />
             Women-only
           </label>
-          <button type="submit" className="btn-emerald py-2 px-5 text-xs flex items-center gap-1.5">
+          <button type="submit" className="btn-primary-blue py-2.5 px-6 text-xs flex items-center gap-1.5 cursor-pointer shrink-0">
             <Search className="w-3.5 h-3.5 stroke-[2.5]" />
-            Search Rides
+            Search
           </button>
         </div>
       </form>
 
       {/* Results Header */}
       <div className="flex justify-between items-center mt-2 pb-1">
-        <h2 className="text-xs uppercase font-extrabold tracking-widest text-neutral-400">Available Rides</h2>
-        <span className="text-xs text-[var(--color-emerald)] font-extrabold">{rides.length} found</span>
+        <h2 className="text-xs uppercase font-bold tracking-wider text-slate-500">Available Rides</h2>
+        <span className="text-xs text-blue-600 font-bold">{rides.length} rides found</span>
       </div>
 
-      {/* Ride Results */}
-      <div className="flex flex-col gap-4">
+      {/* Ride Results (Responsive Multi-Column Grid on Desktop) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {loading ? (
-          // High-fidelity shimmering skeleton cards
-          Array.from({ length: 2 }).map((_, i) => (
-            <div key={i} className="card-uber-white p-5 flex flex-col gap-4">
+          // Shimmering skeleton cards
+          Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="card-airbnb p-5 flex flex-col gap-4">
               <div className="flex justify-between">
                 <div className="flex gap-3">
                   <div className="w-10 h-10 rounded-full skeleton-premium" />
@@ -282,19 +283,19 @@ export default function SearchRides() {
                 </div>
                 <div className="w-16 h-6 skeleton-premium rounded" />
               </div>
-              <div className="border-t border-neutral-900/60 pt-3 flex flex-col gap-2">
+              <div className="border-t border-slate-100 pt-3 flex flex-col gap-2">
                 <div className="w-full h-3 skeleton-premium rounded" />
                 <div className="w-2/3 h-3 skeleton-premium rounded" />
               </div>
             </div>
           ))
         ) : rides.length === 0 ? (
-          <div className="border border-neutral-900/60 p-8 rounded-xl flex flex-col items-center justify-center text-center gap-3 bg-[#070709]">
-            <Info className="w-7 h-7 text-neutral-600" />
+          <div className="col-span-full border border-slate-200 p-12 rounded-2xl flex flex-col items-center justify-center text-center gap-3 bg-white shadow-sm">
+            <Info className="w-8 h-8 text-slate-400" />
             <div>
-              <h3 className="font-bold text-white text-sm">No Rides Found</h3>
-              <p className="text-xs text-neutral-500 mt-1 max-w-[240px] leading-normal">
-                Try widening your search terms or choosing a different date.
+              <h3 className="font-bold text-slate-900 text-base">No Rides Found</h3>
+              <p className="text-xs text-slate-500 mt-1 max-w-sm leading-normal">
+                Try adjusting your origin/destination filter or choosing a different departure date.
               </p>
             </div>
           </div>
@@ -305,55 +306,57 @@ export default function SearchRides() {
             const isVerified = ride.profiles?.is_cin_verified ?? ride.driver_verified ?? false;
             
             return (
-              <div key={ride.id} className="card-uber-white p-5 flex flex-col gap-4">
-                {/* Driver Profile Summary */}
-                <div className="flex justify-between items-start">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-neutral-900 text-neutral-300 font-extrabold flex items-center justify-center uppercase text-sm border border-neutral-800 shadow-md">
-                      {driverName.charAt(0)}
+              <div key={ride.id} className="card-airbnb p-5 flex flex-col justify-between gap-4">
+                <div className="flex flex-col gap-4">
+                  {/* Driver Profile Summary */}
+                  <div className="flex justify-between items-start">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-700 font-extrabold flex items-center justify-center uppercase text-sm border border-blue-200 shadow-sm">
+                        {driverName.charAt(0)}
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-bold text-sm text-slate-900 tracking-tight">{driverName}</span>
+                          {isVerified && (
+                            <span title="CIN Verified">
+                              <ShieldCheck className="w-4 h-4 text-emerald-600 fill-emerald-500/10" />
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-1 text-xs text-slate-500 font-medium mt-0.5">
+                          <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+                          <span className="text-slate-700 font-semibold">{driverRating.toFixed(1)}</span>
+                        </div>
+                      </div>
                     </div>
-                    <div>
-                      <div className="flex items-center gap-1.5">
-                        <span className="font-bold text-sm text-neutral-100 tracking-tight">{driverName}</span>
-                        {isVerified && (
-                          <span title="CIN Verified">
-                            <ShieldCheck className="w-4 h-4 text-[var(--color-emerald)] fill-[var(--color-emerald)]/10" />
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-1 text-[11px] text-neutral-400 font-semibold mt-0.5">
-                        <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-                        <span>{driverRating.toFixed(1)}</span>
-                      </div>
+
+                    <div className="text-right">
+                      <div className="text-xl font-extrabold text-blue-600 tracking-tight">{ride.price_per_seat} MAD</div>
+                      <span className="text-[9px] uppercase tracking-wider text-slate-400 font-bold">per seat</span>
                     </div>
                   </div>
 
-                  <div className="text-right">
-                    <div className="text-xl font-black text-white tracking-tight">{ride.price_per_seat} MAD</div>
-                    <span className="text-[8px] uppercase tracking-widest text-neutral-500 font-extrabold">per seat</span>
-                  </div>
-                </div>
-
-                {/* Ride Route & Info */}
-                <div className="border-t border-neutral-900/60 pt-3.5 flex flex-col gap-2.5 text-xs font-semibold text-neutral-400">
-                  <div className="flex justify-between items-center">
-                    <span className="text-[9px] uppercase font-extrabold text-neutral-500 tracking-wider">Route</span>
-                    <span className="font-bold text-neutral-200">{ride.origin_city} ➔ {ride.destination_city}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-[9px] uppercase font-extrabold text-neutral-500 tracking-wider">Departure</span>
-                    <span className="text-neutral-300">{new Date(ride.departure_time).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-[9px] uppercase font-extrabold text-neutral-500 tracking-wider">Available</span>
-                    <span className="text-[var(--color-emerald)] font-extrabold">{ride.available_seats} seats left</span>
+                  {/* Ride Route & Details */}
+                  <div className="border-t border-slate-100 pt-3.5 flex flex-col gap-2 text-xs font-medium text-slate-600">
+                    <div className="flex justify-between items-center">
+                      <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Route</span>
+                      <span className="font-bold text-slate-900">{ride.origin_city} <span className="text-blue-600">➔</span> {ride.destination_city}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Departure</span>
+                      <span className="text-slate-700 font-semibold">{new Date(ride.departure_time).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Available</span>
+                      <span className="text-blue-600 font-bold">{ride.available_seats} seats left</span>
+                    </div>
                   </div>
                 </div>
 
                 {/* Book Seat Call to Action */}
-                <div className="border-t border-neutral-900/60 pt-3.5 flex items-center justify-between">
+                <div className="border-t border-slate-100 pt-3 flex items-center justify-between mt-auto">
                   {ride.women_only ? (
-                    <span className="text-[8px] font-black uppercase tracking-wider text-pink-500 border border-pink-500/20 bg-pink-500/5 px-2.5 py-0.5 rounded-full">
+                    <span className="text-[9px] font-bold uppercase tracking-wider text-pink-600 border border-pink-200 bg-pink-50 px-2.5 py-0.5 rounded-full">
                       Women Only
                     </span>
                   ) : (
@@ -361,7 +364,7 @@ export default function SearchRides() {
                   )}
                   
                   {bookingSuccess === ride.id ? (
-                    <button disabled className="btn-emerald py-2 px-6 text-xs flex items-center gap-1.5 bg-[var(--color-emerald)] text-white">
+                    <button disabled className="py-2 px-5 text-xs font-bold rounded-lg flex items-center gap-1.5 bg-emerald-600 text-white shadow-sm">
                       <Check className="w-3.5 h-3.5 stroke-[3]" />
                       Requested
                     </button>
@@ -369,7 +372,7 @@ export default function SearchRides() {
                     <button 
                       onClick={() => requestBooking(ride.id)}
                       disabled={bookingLoading === ride.id}
-                      className="btn-emerald py-2 px-6 text-xs"
+                      className="btn-primary-blue py-2 px-5 text-xs cursor-pointer"
                     >
                       {bookingLoading === ride.id ? 'Booking...' : 'Book Seat'}
                     </button>

@@ -152,56 +152,56 @@ export default function BookingChat() {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100%+3rem)] bg-[#030303] -mx-6 -my-6 relative overflow-hidden">
+    <div className="flex flex-col h-[650px] max-w-3xl mx-auto w-full bg-white rounded-2xl border border-slate-200 shadow-md overflow-hidden relative">
       {/* Top Header */}
-      <div className="flex items-center gap-3 px-5 py-4 border-b border-neutral-900/60 bg-[#09090b]/90 backdrop-blur-md sticky top-0 z-30">
+      <div className="flex items-center gap-3 px-5 py-3.5 border-b border-slate-200 bg-white/95 backdrop-blur-md sticky top-0 z-30 shadow-xs">
         <button 
           onClick={() => router.back()}
-          className="p-1.5 rounded-lg hover:bg-neutral-950 transition-colors"
+          className="p-1.5 rounded-lg hover:bg-slate-100 transition-colors text-slate-700 cursor-pointer"
         >
-          <ArrowLeft className="w-4 h-4 text-white" />
+          <ArrowLeft className="w-4 h-4" />
         </button>
         <div>
-          <h2 className="font-bold text-xs text-neutral-100 tracking-tight">Ride Coordination</h2>
-          <span className="text-[9px] text-neutral-500 font-extrabold uppercase tracking-wider">Booking ID: {bookingId.slice(0, 8)}</span>
+          <h2 className="font-bold text-xs text-slate-900 tracking-tight">Ride Coordination</h2>
+          <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Booking: #{bookingId.slice(0, 8)}</span>
         </div>
       </div>
 
       {/* Cash Warning Banner */}
-      <div className="bg-amber-500/5 border-b border-amber-500/10 px-5 py-3 flex items-start gap-2.5 text-[10px] text-amber-300 font-medium">
-        <CreditCard className="w-4 h-4 text-amber-500 shrink-0" />
+      <div className="bg-amber-50 border-b border-amber-200 px-5 py-2.5 flex items-start gap-2.5 text-[11px] text-amber-900 font-medium">
+        <CreditCard className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
         <p className="leading-normal">
-          <strong>Payment Policy:</strong> Pay your driver in <strong>cash</strong> inside the car. Do not send online transactions.
+          <strong>Payment Policy:</strong> Pay your driver in <strong>cash</strong> inside the car. Do not transfer digital payments online.
         </p>
       </div>
 
       {/* Message Feed */}
-      <div className="flex-1 overflow-y-auto p-5 flex flex-col gap-4.5 pb-24">
+      <div className="flex-1 overflow-y-auto p-5 flex flex-col gap-4 pb-20 bg-slate-50/50">
         {loading ? (
-          <div className="text-center text-xs text-neutral-500 py-8">Loading message history...</div>
+          <div className="text-center text-xs text-slate-400 py-8">Loading messages...</div>
         ) : (
           messages.map((msg) => {
             const isMe = msg.sender_id === userId || msg.sender_id === 'me';
             return (
               <div 
                 key={msg.id}
-                className={`max-w-[80%] flex flex-col gap-1 ${
+                className={`max-w-[80%] sm:max-w-[70%] flex flex-col gap-1 ${
                   isMe ? 'self-end items-end' : 'self-start items-start'
                 }`}
               >
-                <span className="text-[9px] text-neutral-500 font-bold px-1.5">
+                <span className="text-[10px] text-slate-400 font-semibold px-1">
                   {isMe ? 'You' : msg.sender_name || 'Driver'}
                 </span>
                 <div 
-                  className={`px-4 py-2.5 rounded-[18px] text-[12px] leading-relaxed font-semibold ${
+                  className={`px-4 py-2.5 rounded-2xl text-xs leading-relaxed font-medium ${
                     isMe 
-                      ? 'bg-[var(--color-emerald)] text-white rounded-tr-none shadow-[0_4px_12px_rgba(5,150,105,0.15)]' 
-                      : 'bg-[#0f0f12] text-neutral-200 rounded-tl-none border border-neutral-900/60 shadow-sm'
+                      ? 'bg-blue-600 text-white rounded-tr-none shadow-sm' 
+                      : 'bg-white text-slate-800 rounded-tl-none border border-slate-200 shadow-xs'
                   }`}
                 >
                   {msg.content}
                 </div>
-                <span className="text-[8px] text-neutral-600 px-1.5 font-bold mt-0.5">
+                <span className="text-[9px] text-slate-400 px-1 font-medium mt-0.5">
                   {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </span>
               </div>
@@ -214,20 +214,20 @@ export default function BookingChat() {
       {/* Message Input Box */}
       <form 
         onSubmit={handleSendMessage}
-        className="absolute bottom-0 left-0 right-0 p-4 bg-[#09090b] border-t border-neutral-900/60 flex gap-2 items-center z-20"
+        className="absolute bottom-0 left-0 right-0 p-3.5 bg-white border-t border-slate-200 flex gap-2 items-center z-20 shadow-lg"
       >
         <input 
           type="text" 
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
           placeholder="Type message to coordinate..."
-          className="flex-1 bg-[#18181b]/50 border border-neutral-900 rounded-full text-xs text-white px-4 py-2.5 outline-none focus:border-neutral-700 transition-colors"
+          className="flex-1 bg-slate-100 border border-slate-200 rounded-full text-xs text-slate-900 px-4 py-2.5 outline-none focus:bg-white focus:border-blue-600 transition-colors"
         />
         <button 
           type="submit"
-          className="btn-emerald p-2.5 rounded-full shrink-0 flex items-center justify-center cursor-pointer"
+          className="btn-primary-blue p-2.5 rounded-full shrink-0 flex items-center justify-center cursor-pointer"
         >
-          <Send className="w-3.5 h-3.5 text-white fill-white/10" />
+          <Send className="w-3.5 h-3.5 text-white" />
         </button>
       </form>
     </div>

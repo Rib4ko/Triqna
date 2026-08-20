@@ -111,132 +111,136 @@ export default function PublishRide() {
   };
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 max-w-3xl mx-auto w-full">
       {/* Title */}
       <div className="flex flex-col gap-1 mt-1">
-        <h1 className="text-3xl font-black tracking-tight bg-gradient-to-br from-white to-neutral-400 bg-clip-text text-transparent leading-none">Offer a Ride</h1>
-        <p className="text-[10px] text-neutral-400 font-extrabold uppercase tracking-wider">Share your travel costs legally with passengers</p>
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-900 leading-tight">Offer a Ride</h1>
+        <p className="text-xs sm:text-sm text-slate-500 font-medium">Share your travel costs legally with verified passengers</p>
       </div>
 
       {success && (
-        <div className="bg-[var(--color-emerald)]/10 border border-[var(--color-emerald)]/20 p-4.5 rounded-xl flex items-start gap-3.5">
-          <div className="w-7 h-7 rounded-full bg-[var(--color-emerald)] flex items-center justify-center text-black shrink-0 font-extrabold text-sm shadow-[0_0_8px_rgba(5,150,105,0.4)]">
+        <div className="bg-emerald-50 border border-emerald-200 p-4 rounded-xl flex items-start gap-3.5 shadow-sm">
+          <div className="w-6 h-6 rounded-full bg-emerald-600 flex items-center justify-center text-white shrink-0 font-bold text-xs">
             ✓
           </div>
           <div>
-            <h3 className="font-extrabold text-white text-sm">Ride Published!</h3>
-            <p className="text-xs text-neutral-400 mt-0.5 leading-normal">
-              Your ride is now visible. Passengers will send booking requests to you.
+            <h3 className="font-bold text-emerald-900 text-sm">Ride Published!</h3>
+            <p className="text-xs text-emerald-700 mt-0.5 leading-normal">
+              Your ride is live. Passengers can now send booking requests to you.
             </p>
           </div>
         </div>
       )}
 
       {error && (
-        <div className="bg-red-950/15 border border-red-500/20 p-4.5 rounded-xl flex items-start gap-3.5">
-          <ShieldAlert className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
+        <div className="bg-red-50 border border-red-200 p-4 rounded-xl flex items-start gap-3.5 shadow-sm">
+          <ShieldAlert className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
           <div>
-            <h3 className="font-extrabold text-white text-sm">Publishing Blocked</h3>
-            <p className="text-xs text-neutral-400 mt-0.5 leading-normal">{error}</p>
+            <h3 className="font-bold text-red-900 text-sm">Publishing Blocked</h3>
+            <p className="text-xs text-red-700 mt-0.5 leading-normal">{error}</p>
           </div>
         </div>
       )}
 
-      {/* High-Contrast Card Form (Stripe Element Style) */}
-      <form onSubmit={handleSubmit} className="card-uber-white p-0 overflow-hidden flex flex-col">
-        {/* Origin */}
-        <div className="px-5 py-4 border-b border-neutral-900/60 flex flex-col gap-1.5 hover:bg-neutral-900/10 transition-colors">
-          <label className="text-[9px] uppercase font-extrabold tracking-widest text-neutral-500">Departure City</label>
-          <div className="relative flex items-center">
-            <select 
-              required
-              value={origin} 
-              onChange={(e) => setOrigin(e.target.value)}
-              className="w-full bg-transparent text-white pr-8 py-1.5 text-sm font-semibold outline-none appearance-none cursor-pointer"
-            >
-              <option value="" className="bg-[#0f0f12] text-neutral-400">Select departure...</option>
-              {MOROCCAN_CITIES.map(c => <option key={c} value={c} className="bg-[#0f0f12] text-white">{c}</option>)}
-            </select>
-            <div className="absolute right-0 pointer-events-none border-l-4 border-r-4 border-t-4 border-transparent border-t-neutral-500 w-0 h-0" />
+      {/* Responsive Airbnb-Style Card Form */}
+      <form onSubmit={handleSubmit} className="card-airbnb p-0 overflow-hidden flex flex-col shadow-md">
+        <div className="p-6 md:p-8 flex flex-col gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Origin */}
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[10px] uppercase font-bold tracking-wider text-slate-400">Departure City</label>
+              <div className="relative flex items-center">
+                <select 
+                  required
+                  value={origin} 
+                  onChange={(e) => setOrigin(e.target.value)}
+                  className="input-airbnb w-full pr-8 py-2.5 px-3 outline-none cursor-pointer"
+                >
+                  <option value="" className="text-slate-400">Select departure...</option>
+                  {MOROCCAN_CITIES.map(c => <option key={c} value={c} className="text-slate-900">{c}</option>)}
+                </select>
+                <div className="absolute right-3 pointer-events-none border-l-4 border-r-4 border-t-4 border-transparent border-t-slate-400 w-0 h-0" />
+              </div>
+            </div>
+
+            {/* Destination */}
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[10px] uppercase font-bold tracking-wider text-slate-400">Destination City</label>
+              <div className="relative flex items-center">
+                <select 
+                  required
+                  value={destination} 
+                  onChange={(e) => setDestination(e.target.value)}
+                  className="input-airbnb w-full pr-8 py-2.5 px-3 outline-none cursor-pointer"
+                >
+                  <option value="" className="text-slate-400">Select destination...</option>
+                  {MOROCCAN_CITIES.map(c => <option key={c} value={c} className="text-slate-900">{c}</option>)}
+                </select>
+                <div className="absolute right-3 pointer-events-none border-l-4 border-r-4 border-t-4 border-transparent border-t-slate-400 w-0 h-0" />
+              </div>
+            </div>
           </div>
-        </div>
 
-        {/* Destination */}
-        <div className="px-5 py-4 border-b border-neutral-900/60 flex flex-col gap-1.5 hover:bg-neutral-900/10 transition-colors">
-          <label className="text-[9px] uppercase font-extrabold tracking-widest text-neutral-500">Destination City</label>
-          <div className="relative flex items-center">
-            <select 
-              required
-              value={destination} 
-              onChange={(e) => setDestination(e.target.value)}
-              className="w-full bg-transparent text-white pr-8 py-1.5 text-sm font-semibold outline-none appearance-none cursor-pointer"
-            >
-              <option value="" className="bg-[#0f0f12] text-neutral-400">Select destination...</option>
-              {MOROCCAN_CITIES.map(c => <option key={c} value={c} className="bg-[#0f0f12] text-white">{c}</option>)}
-            </select>
-            <div className="absolute right-0 pointer-events-none border-l-4 border-r-4 border-t-4 border-transparent border-t-neutral-500 w-0 h-0" />
-          </div>
-        </div>
-
-        {/* Date Time */}
-        <div className="px-5 py-4 border-b border-neutral-900/60 flex flex-col gap-1.5 hover:bg-neutral-900/10 transition-colors">
-          <label className="text-[9px] uppercase font-extrabold tracking-widest text-neutral-500">Date & Time</label>
-          <input 
-            required
-            type="datetime-local" 
-            value={departureTime} 
-            onChange={(e) => setDepartureTime(e.target.value)}
-            className="w-full bg-transparent text-white py-1 text-sm font-semibold outline-none [color-scheme:dark]"
-          />
-        </div>
-
-        <div className="grid grid-cols-2 border-b border-neutral-900/60">
-          {/* Seats */}
-          <div className="px-5 py-4 border-r border-neutral-900/60 flex flex-col gap-1.5 hover:bg-neutral-900/10 transition-colors">
-            <label className="text-[9px] uppercase font-extrabold tracking-widest text-neutral-500">Seats Offered</label>
+          {/* Date Time */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-[10px] uppercase font-bold tracking-wider text-slate-400">Date & Time of Departure</label>
             <input 
               required
-              type="number" 
-              min={1} 
-              max={6}
-              value={availableSeats} 
-              onChange={(e) => setAvailableSeats(parseInt(e.target.value) || 1)}
-              className="w-full bg-transparent text-white py-1.5 text-sm font-semibold outline-none"
+              type="datetime-local" 
+              value={departureTime} 
+              onChange={(e) => setDepartureTime(e.target.value)}
+              className="input-airbnb w-full px-3 py-2.5 outline-none"
             />
           </div>
 
-          {/* Price */}
-          <div className="px-5 py-4 flex flex-col gap-1.5 hover:bg-neutral-900/10 transition-colors">
-            <label className="text-[9px] uppercase font-extrabold tracking-widest text-neutral-500">Price (per seat)</label>
-            <div className="relative flex items-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Seats */}
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[10px] uppercase font-bold tracking-wider text-slate-400">Seats Offered</label>
               <input 
                 required
                 type="number" 
-                min={5}
-                value={pricePerSeat} 
-                onChange={(e) => setPricePerSeat(parseInt(e.target.value) || 0)}
-                className="w-full bg-transparent text-white py-1.5 pr-10 text-sm font-semibold outline-none"
+                min={1} 
+                max={6}
+                value={availableSeats} 
+                onChange={(e) => setAvailableSeats(parseInt(e.target.value) || 1)}
+                className="input-airbnb w-full px-3 py-2.5 outline-none"
               />
-              <span className="absolute right-0 text-[10px] text-neutral-400 font-extrabold tracking-wider">MAD</span>
+            </div>
+
+            {/* Price */}
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[10px] uppercase font-bold tracking-wider text-slate-400">Price per Seat (MAD)</label>
+              <div className="relative flex items-center">
+                <input 
+                  required
+                  type="number" 
+                  min={5}
+                  value={pricePerSeat} 
+                  onChange={(e) => setPricePerSeat(parseInt(e.target.value) || 0)}
+                  className="input-airbnb w-full pl-3 pr-12 py-2.5 outline-none"
+                />
+                <span className="absolute right-3 text-xs text-slate-400 font-bold tracking-wider">MAD</span>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Bottom Bar with Checkbox */}
-        <div className="px-5 py-4 flex items-center justify-between bg-[#0d0d10]/40">
-          <label className="flex items-center gap-2 text-xs text-neutral-300 font-bold select-none cursor-pointer">
+        {/* Bottom Bar with Checkbox & Submit */}
+        <div className="px-6 md:px-8 py-4 flex items-center justify-between bg-slate-50 border-t border-slate-100">
+          <label className="flex items-center gap-2 text-xs text-slate-700 font-semibold select-none cursor-pointer">
             <input 
               type="checkbox" 
               checked={womenOnly}
               onChange={(e) => setWomenOnly(e.target.checked)}
-              className="w-4 h-4 accent-[var(--color-emerald)] rounded border-neutral-700 bg-neutral-900 cursor-pointer"
+              className="w-4 h-4 accent-blue-600 rounded border-slate-300 cursor-pointer"
             />
             Women-Only ride
           </label>
           <button 
             type="submit" 
             disabled={loading}
-            className="btn-emerald py-2 px-5 text-xs flex items-center gap-1.5"
+            className="btn-primary-blue py-2.5 px-6 text-xs flex items-center gap-1.5 cursor-pointer"
           >
             <PlusSquare className="w-3.5 h-3.5 stroke-[2.5]" />
             {loading ? 'Publishing...' : 'Publish Ride'}
@@ -244,19 +248,19 @@ export default function PublishRide() {
         </div>
       </form>
 
-      {/* Price Warnings */}
+      {/* Price Warning Alert */}
       {priceWarning && (
-        <div className="bg-amber-500/5 border border-amber-500/15 p-4 rounded-xl flex items-start gap-3">
-          <AlertCircle className="w-4.5 h-4.5 text-amber-500 shrink-0 mt-0.5 animate-pulse" />
-          <p className="text-[11px] text-amber-300/90 font-medium leading-normal">{priceWarning}</p>
+        <div className="bg-amber-50 border border-amber-200 p-4 rounded-xl flex items-start gap-3 shadow-sm">
+          <AlertCircle className="w-4.5 h-4.5 text-amber-600 shrink-0 mt-0.5" />
+          <p className="text-xs text-amber-800 font-medium leading-normal">{priceWarning}</p>
         </div>
       )}
 
-      {/* Legal Disclaimer */}
-      <div className="bg-[#0e0e11] border border-neutral-900/60 p-4 rounded-xl text-[11px] text-neutral-400 font-medium flex items-start gap-3 leading-normal shadow-[0_4px_20px_rgba(0,0,0,0.15)]">
-        <HelpCircle className="w-4.5 h-4.5 text-[var(--color-emerald)] shrink-0 mt-0.5" />
+      {/* Moroccan Legal Disclaimer */}
+      <div className="bg-blue-50/70 border border-blue-100 p-4 rounded-xl text-xs text-blue-900 font-medium flex items-start gap-3 leading-relaxed shadow-sm">
+        <HelpCircle className="w-4.5 h-4.5 text-blue-600 shrink-0 mt-0.5" />
         <p>
-          Carpooling is permitted in Morocco strictly for **cost-sharing (gas and highway tolls)**. Setting commercial prices violates regional transportation regulations.
+          Carpooling is permitted in Morocco strictly for <strong>cost-sharing (fuel and toll fees)</strong>. Setting commercial fare prices violates regional transport regulations.
         </p>
       </div>
     </div>

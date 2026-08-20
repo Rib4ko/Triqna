@@ -1,9 +1,11 @@
 import type { Metadata, Viewport } from "next";
+import Link from "next/link";
 import "./globals.css";
 import Navigation from "@/components/Navigation";
+import HeaderNavLinks from "@/components/HeaderNavLinks";
 
 export const metadata: Metadata = {
-  title: "Triqna | Premium Moroccan Intercity Carpooling",
+  title: "Triqna | Moroccan Intercity Carpooling",
   description: "Peer-to-peer intercity carpooling for Morocco. Safe, legal cost-sharing rides.",
 };
 
@@ -20,32 +22,64 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full bg-[#030303]">
-      <body className="h-full antialiased font-sans text-white flex justify-center items-center p-0 sm:p-4">
-        {/* Mobile PWA Shell centered on screen */}
-        <div className="w-full h-full sm:h-[850px] max-w-md bg-[#030303] sm:border sm:border-neutral-800/50 sm:rounded-[28px] flex flex-col relative overflow-hidden shadow-[0_0_80px_rgba(5,150,105,0.05),0_30px_70px_rgba(0,0,0,0.85)]">
-          {/* Header - Glassmorphic */}
-          <header className="flex items-center justify-between px-6 py-4.5 border-b border-neutral-900/65 bg-[#030303]/85 backdrop-blur-md sticky top-0 z-40">
-            <div className="flex items-center gap-2">
-              <span className="text-xl font-black tracking-tight bg-gradient-to-r from-white to-neutral-400 bg-clip-text text-transparent">triqna</span>
-              <span className="text-[8px] font-black tracking-widest bg-[rgba(5,150,105,0.12)] text-[var(--color-emerald)] border border-[rgba(5,150,105,0.25)] px-2 py-0.5 rounded-full">
+    <html lang="en" className="h-full bg-slate-50">
+      <body className="min-h-screen antialiased font-sans text-slate-900 flex flex-col bg-slate-50">
+        {/* Responsive Header Bar */}
+        <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            {/* Logo */}
+            <Link href="/" className="flex items-center gap-2 group">
+              <span className="text-2xl font-black tracking-tight text-slate-900 group-hover:text-blue-600 transition-colors">
+                triqna
+              </span>
+              <span className="text-[9px] font-black tracking-widest bg-blue-50 text-blue-600 border border-blue-200 px-2 py-0.5 rounded-full">
                 OUR ROAD
               </span>
-            </div>
-            <div className="flex items-center gap-1.5 bg-[#0c0c0e]/80 px-3 py-1 rounded-full border border-neutral-800/40">
-              <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-emerald)] animate-pulse shadow-[0_0_8px_var(--color-emerald)]" />
-              <span className="text-[9px] text-neutral-400 font-bold uppercase tracking-wider">Morocco</span>
-            </div>
-          </header>
+            </Link>
 
-          {/* Core Content Area */}
-          <main className="flex-1 overflow-y-auto pb-28 px-6 py-6 bg-[#030303]">
-            {children}
-          </main>
+            {/* Desktop Center Navigation Links */}
+            <nav className="hidden md:flex items-center gap-1 bg-slate-100/80 p-1 rounded-full border border-slate-200">
+              <HeaderNavLinks />
+            </nav>
 
-          {/* Bottom navigation */}
-          <Navigation />
-        </div>
+            {/* Right Action / Country Badge */}
+            <div className="flex items-center gap-3">
+              <div className="hidden sm:flex items-center gap-1.5 bg-slate-50 px-3 py-1 rounded-full border border-slate-200">
+                <span className="w-2 h-2 rounded-full bg-blue-600" />
+                <span className="text-[10px] text-slate-600 font-bold uppercase tracking-wider">Morocco</span>
+              </div>
+              
+              <Link 
+                href="/publish"
+                className="hidden md:flex btn-primary-blue py-1.5 px-4 text-xs font-semibold"
+              >
+                + Offer a Ride
+              </Link>
+            </div>
+          </div>
+        </header>
+
+        {/* Main Content Area */}
+        <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8 pb-28 md:pb-12">
+          {children}
+        </main>
+
+        {/* Bottom Navigation Bar (Mobile Only) */}
+        <Navigation />
+
+        {/* Desktop Footer */}
+        <footer className="hidden md:block border-t border-slate-200 bg-white py-6 mt-auto">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-slate-500 font-medium">
+            <div>
+              © 2026 <strong>Triqna</strong> — Moroccan Peer-to-Peer Intercity Cost Sharing Platform.
+            </div>
+            <div className="flex items-center gap-6">
+              <span className="hover:text-slate-800 cursor-pointer">Terms & Safety</span>
+              <span className="hover:text-slate-800 cursor-pointer">Legal Limit Caps</span>
+              <span className="hover:text-slate-800 cursor-pointer">Support</span>
+            </div>
+          </div>
+        </footer>
       </body>
     </html>
   );

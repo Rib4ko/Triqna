@@ -15,8 +15,8 @@ export default function Navigation() {
   ];
 
   return (
-    <nav className="absolute bottom-0 left-0 right-0 z-40 border-t border-neutral-900/60 bg-[#070709]/80 backdrop-blur-xl px-6 py-3">
-      <div className="flex justify-between items-center px-4">
+    <nav className="fixed bottom-0 left-0 right-0 z-40 md:hidden border-t border-slate-200 bg-white/95 backdrop-blur-xl px-6 py-2.5 shadow-lg">
+      <div className="flex justify-between items-center px-4 max-w-md mx-auto">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href;
@@ -29,23 +29,23 @@ export default function Navigation() {
               <div 
                 className={`p-1.5 rounded-xl transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
                   isActive 
-                    ? 'text-[var(--color-emerald)] bg-[rgba(5,150,105,0.08)] scale-110' 
-                    : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800/20'
+                    ? 'text-blue-600 bg-blue-50 scale-105' 
+                    : 'text-slate-400 hover:text-slate-700 hover:bg-slate-50'
                 }`}
               >
                 <Icon className="w-5 h-5 stroke-[2]" />
               </div>
               <span 
-                className={`text-[9px] font-bold tracking-tight transition-colors duration-250 ${
-                  isActive ? 'text-[var(--color-emerald)]' : 'text-neutral-500 group-hover:text-neutral-300'
+                className={`text-[9px] font-bold tracking-tight transition-colors duration-200 ${
+                  isActive ? 'text-blue-600' : 'text-slate-500 group-hover:text-slate-700'
                 }`}
               >
                 {item.name}
               </span>
               
-              {/* Premium indicator dot below active navigation tab */}
+              {/* Indicator dot below active navigation tab */}
               {isActive && (
-                <span className="absolute -bottom-0.5 w-1 h-1 rounded-full bg-[var(--color-emerald)] shadow-[0_0_8px_var(--color-emerald)]" />
+                <span className="absolute -bottom-0.5 w-1 h-1 rounded-full bg-blue-600" />
               )}
             </Link>
           );

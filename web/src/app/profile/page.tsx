@@ -137,132 +137,150 @@ export default function UserProfile() {
   };
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 w-full">
+      {/* Title */}
+      <div className="flex flex-col gap-1 mt-1">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-900 leading-tight">My Profile</h1>
+        <p className="text-xs sm:text-sm text-slate-500 font-medium">Manage your profile details, trust badges, and reviews</p>
+      </div>
+
       {/* Header Profile Badge */}
-      <div className="flex items-center gap-4 border-b border-neutral-900/60 pb-5">
-        <div className="w-14 h-14 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center font-black text-neutral-300 uppercase text-xl shadow-inner">
-          {profile.full_name.charAt(0)}
-        </div>
-        <div>
-          <div className="flex items-center gap-2">
-            <h2 className="text-xl font-extrabold text-white tracking-tight leading-none">{profile.full_name}</h2>
-            {profile.is_cin_verified ? (
-              <span className="bg-[var(--color-emerald)]/5 text-[var(--color-emerald)] border border-[var(--color-emerald)]/20 text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full flex items-center gap-1.5">
-                <ShieldCheck className="w-3 h-3" />
-                Verified
-              </span>
-            ) : (
-              <span className="bg-amber-500/5 text-amber-500 border border-amber-500/20 text-[8px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full">
-                Unverified
-              </span>
-            )}
+      <div className="card-airbnb p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
+        <div className="flex items-center gap-4">
+          <div className="w-16 h-16 rounded-full bg-blue-50 border border-blue-200 flex items-center justify-center font-extrabold text-blue-700 uppercase text-2xl shadow-xs shrink-0">
+            {profile.full_name.charAt(0)}
           </div>
-          <div className="flex items-center gap-1.5 text-xs text-neutral-400 font-bold mt-2">
-            <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-            <span className="text-neutral-200">{profile.rating.toFixed(1)}</span>
-            <span className="text-neutral-700">•</span>
-            <span>{profile.phone_number}</span>
+          <div>
+            <div className="flex items-center gap-2">
+              <h2 className="text-xl font-extrabold text-slate-900 tracking-tight leading-none">{profile.full_name}</h2>
+              {profile.is_cin_verified ? (
+                <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[9px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                  <ShieldCheck className="w-3 h-3" />
+                  Verified
+                </span>
+              ) : (
+                <span className="bg-amber-50 text-amber-700 border border-amber-200 text-[9px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full">
+                  Unverified
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-1.5 text-xs text-slate-500 font-semibold mt-2">
+              <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+              <span className="text-slate-900 font-bold">{profile.rating.toFixed(1)} rating</span>
+              <span className="text-slate-300">•</span>
+              <span>{profile.phone_number}</span>
+            </div>
           </div>
         </div>
       </div>
 
       {saveSuccess && (
-        <div className="bg-[var(--color-emerald)]/10 border border-[var(--color-emerald)]/20 p-3.5 rounded-xl text-xs text-[var(--color-emerald)] font-bold flex items-center gap-2">
-          <Check className="w-4 h-4 stroke-[3]" />
-          Profile updated successfully!
+        <div className="bg-emerald-50 border border-emerald-200 p-3.5 rounded-xl text-xs text-emerald-900 font-bold flex items-center gap-2 shadow-xs">
+          <Check className="w-4 h-4 stroke-[3] text-emerald-600" />
+          Profile details saved successfully!
         </div>
       )}
 
-      {/* Edit Profile Info - Card */}
-      <form onSubmit={handleUpdateProfile} className="card-uber-white p-5 flex flex-col gap-4">
-        <div className="flex flex-col gap-1.5">
-          <label className="text-[9px] uppercase font-extrabold tracking-wider text-neutral-500">Full Name</label>
-          <div className="relative flex items-center">
-            <User className="absolute left-3 w-4 h-4 text-neutral-500" />
-            <input 
-              required
-              type="text" 
-              value={profile.full_name}
-              onChange={(e) => setProfile({ ...profile, full_name: e.target.value })}
-              className="input-uber w-full pl-9 pr-3 py-2.5 outline-none"
-            />
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-1.5">
-          <label className="text-[9px] uppercase font-extrabold tracking-wider text-neutral-500">Mini-Bio</label>
-          <textarea 
-            value={profile.bio}
-            rows={3}
-            onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
-            className="input-uber w-full px-3 py-2 outline-none resize-none leading-normal"
-          />
-        </div>
-
-        <button 
-          type="submit" 
-          disabled={updatingProfile}
-          className="btn-emerald w-full py-3 text-xs flex items-center justify-center gap-2"
-        >
-          <Save className="w-4 h-4 stroke-[2.5]" />
-          {updatingProfile ? 'Saving...' : 'Save Profile Details'}
-        </button>
-      </form>
-
-      {/* Trust & Safety (CIN Upload Verification) */}
-      <div className="card-uber-white p-5 flex flex-col gap-4">
-        <div className="flex items-start gap-3">
-          <FileText className="w-5 h-5 text-[var(--color-emerald)] shrink-0 mt-0.5" />
-          <div>
-            <h3 className="text-xs font-black uppercase tracking-wider text-neutral-100">National ID Verification</h3>
-            <p className="text-[11px] text-neutral-400 font-semibold mt-1 leading-normal">
-              Upload your Moroccan CIN to receive the verification badge. Verified drivers build trust and get booked 3x faster.
-            </p>
-          </div>
-        </div>
-
-        {cinUploaded ? (
-          <div className="bg-[var(--color-emerald)]/5 border border-[var(--color-emerald)]/20 p-3.5 rounded-xl text-[10px] text-[var(--color-emerald)] font-bold flex items-center gap-2.5">
-            <Check className="w-4 h-4 stroke-[3]" />
-            CIN uploaded successfully! Pending admin verification.
-          </div>
-        ) : (
-          <div>
-            <label className="border-2 border-dashed border-neutral-850 hover:border-[var(--color-emerald)]/40 rounded-xl p-6 flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors bg-[#0a0a0d]/60">
-              <Upload className="w-5 h-5 text-neutral-500" />
-              <span className="text-xs text-neutral-300 font-bold">Upload National ID (CIN)</span>
-              <span className="text-[9px] text-neutral-500 font-semibold">JPG, PNG (Max 5MB)</span>
-              <input 
-                type="file" 
-                accept="image/*"
-                onChange={handleCinUpload}
-                disabled={uploading}
-                className="hidden" 
-              />
-            </label>
-          </div>
-        )}
-      </div>
-
-      {/* Past Reviews & Ratings */}
-      <div className="flex flex-col gap-3">
-        <h3 className="text-[9px] font-black uppercase tracking-widest text-neutral-500">Past Ride Reviews</h3>
-        
-        <div className="flex flex-col gap-3">
-          {reviews.map((review) => (
-            <div key={review.id} className="border border-neutral-900/60 p-4 rounded-xl bg-[#09090b]/80 flex flex-col gap-1.5 shadow-sm">
-              <div className="flex justify-between items-center text-xs">
-                <span className="font-bold text-neutral-200">{review.reviewer_name}</span>
-                <div className="flex items-center gap-0.5">
-                  {Array.from({ length: review.rating }).map((_, i) => (
-                    <Star key={i} className="w-3 h-3 text-amber-500 fill-amber-500" />
-                  ))}
-                </div>
+      {/* 2-Column Desktop Dashboard */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Column 1: Edit Profile Info */}
+        <form onSubmit={handleUpdateProfile} className="card-airbnb p-6 flex flex-col gap-5 justify-between">
+          <div className="flex flex-col gap-4">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">Edit Personal Details</h3>
+            
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[10px] uppercase font-bold tracking-wider text-slate-400">Full Name</label>
+              <div className="relative flex items-center">
+                <User className="absolute left-3 w-4 h-4 text-slate-400" />
+                <input 
+                  required
+                  type="text" 
+                  value={profile.full_name}
+                  onChange={(e) => setProfile({ ...profile, full_name: e.target.value })}
+                  className="input-airbnb w-full pl-9 pr-3 py-2.5 outline-none"
+                />
               </div>
-              <p className="text-xs text-neutral-400 italic">"{review.comment}"</p>
-              <span className="text-[8px] font-bold text-neutral-600 uppercase tracking-widest">{review.date}</span>
             </div>
-          ))}
+
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[10px] uppercase font-bold tracking-wider text-slate-400">Mini-Bio</label>
+              <textarea 
+                value={profile.bio}
+                rows={4}
+                onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
+                className="input-airbnb w-full px-3 py-2 outline-none resize-none leading-relaxed"
+              />
+            </div>
+          </div>
+
+          <button 
+            type="submit" 
+            disabled={updatingProfile}
+            className="btn-primary-blue w-full py-2.5 text-xs flex items-center justify-center gap-2 cursor-pointer mt-2"
+          >
+            <Save className="w-4 h-4 stroke-[2.5]" />
+            {updatingProfile ? 'Saving...' : 'Save Profile Details'}
+          </button>
+        </form>
+
+        {/* Column 2: Verification & Reviews */}
+        <div className="flex flex-col gap-6">
+          {/* Trust & Safety (CIN Upload Verification) */}
+          <div className="card-airbnb p-6 flex flex-col gap-4">
+            <div className="flex items-start gap-3">
+              <FileText className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+              <div>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">National ID Verification</h3>
+                <p className="text-xs text-slate-500 mt-1 leading-normal">
+                  Upload your Moroccan CIN to earn a verified trust badge. Verified drivers get booked 3x faster.
+                </p>
+              </div>
+            </div>
+
+            {cinUploaded ? (
+              <div className="bg-emerald-50 border border-emerald-200 p-3.5 rounded-xl text-xs text-emerald-900 font-semibold flex items-center gap-2">
+                <Check className="w-4 h-4 stroke-[3] text-emerald-600" />
+                CIN uploaded! Pending admin verification.
+              </div>
+            ) : (
+              <div>
+                <label className="border-2 border-dashed border-slate-200 hover:border-blue-500 rounded-xl p-5 flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors bg-slate-50/50">
+                  <Upload className="w-5 h-5 text-slate-400" />
+                  <span className="text-xs text-slate-800 font-bold">Upload National ID (CIN)</span>
+                  <span className="text-[10px] text-slate-400 font-medium">JPG, PNG (Max 5MB)</span>
+                  <input 
+                    type="file" 
+                    accept="image/*"
+                    onChange={handleCinUpload}
+                    disabled={uploading}
+                    className="hidden" 
+                  />
+                </label>
+              </div>
+            )}
+          </div>
+
+          {/* Past Reviews & Ratings */}
+          <div className="flex flex-col gap-3">
+            <h3 className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Past Ride Reviews</h3>
+            
+            <div className="flex flex-col gap-3">
+              {reviews.map((review) => (
+                <div key={review.id} className="border border-slate-200 p-4 rounded-xl bg-white flex flex-col gap-1.5 shadow-xs">
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="font-bold text-slate-800">{review.reviewer_name}</span>
+                    <div className="flex items-center gap-0.5">
+                      {Array.from({ length: review.rating }).map((_, i) => (
+                        <Star key={i} className="w-3 h-3 text-amber-500 fill-amber-500" />
+                      ))}
+                    </div>
+                  </div>
+                  <p className="text-xs text-slate-600 italic">"{review.comment}"</p>
+                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">{review.date}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </div>
