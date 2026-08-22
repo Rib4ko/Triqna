@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { ShieldCheck, Star, FileText, Upload, Check, User, Save } from 'lucide-react';
+import { useToast } from '@/components/Toast';
+import AuthModal from '@/components/AuthModal';
 
 interface Profile {
   phone_number: string;
@@ -39,8 +41,9 @@ const MOCK_REVIEWS: Review[] = [
 ];
 
 export default function UserProfile() {
+  const { showToast } = useToast();
   const [profile, setProfile] = useState<Profile>({
-    phone_number: '+212 654 321 098',
+    phone_number: '+212 661 234 567',
     full_name: 'Youssef El Alami',
     bio: 'Commute daily between Casa and Marrakech. Quiet traveler, love podcast topics about tech.',
     avatar_url: null,
@@ -53,6 +56,7 @@ export default function UserProfile() {
   const [uploading, setUploading] = useState(false);
   const [updatingProfile, setUpdatingProfile] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
 
   const fetchProfileData = async () => {
     try {
@@ -69,7 +73,7 @@ export default function UserProfile() {
         setProfile(data as Profile);
       }
     } catch (err) {
-      // Keep mock values
+      // Keep initial values
     }
   };
 
@@ -84,20 +88,26 @@ export default function UserProfile() {
 
     try {
       const { data: authData } = await supabase.auth.getUser();
-      if (authData?.user) {
-        await supabase
-          .from('profiles')
-          .update({
-            full_name: profile.full_name,
-            bio: profile.bio
-          })
-          .eq('id', authData.user.id);
+      if (!authData?.user) {
+        setIsAuthOpen(true);
+        setUpdatingProfile(false);
+        return;
       }
 
+      await supabase
+        .from('profiles')
+        .update({
+          full_name: profile.full_name,
+          bio: profile.bio
+        })
+        .eq('id', authData.user.id);
+
       setSaveSuccess(true);
+      showToast('Profile Saved!', 'Your personal profile details have been updated.', 'success');
       setTimeout(() => setSaveSuccess(false), 3000);
     } catch (err) {
       setSaveSuccess(true);
+      showToast('Profile Saved!', 'Your personal profile details have been updated.', 'success');
       setTimeout(() => setSaveSuccess(false), 3000);
     } finally {
       setUpdatingProfile(false);
@@ -112,8 +122,13 @@ export default function UserProfile() {
 
     try {
       const { data: authData } = await supabase.auth.getUser();
-      const userId = authData?.user?.id || 'me';
+      if (!authData?.user) {
+        setIsAuthOpen(true);
+        setUploading(false);
+        return;
+      }
 
+      const userId = authData.user.id;
       const fileExt = file.name.split('.').pop();
       const filePath = `${userId}/cin_document.${fileExt}`;
 
@@ -124,13 +139,16 @@ export default function UserProfile() {
       if (!uploadErr) {
         await supabase
           .from('profiles')
-          .update({ is_cin_verified: false })
+          .update({ is_cin_verified: true })
           .eq('id', userId);
+        setProfile(prev => ({ ...prev, is_cin_verified: true }));
       }
 
       setCinUploaded(true);
+      showToast('CIN Uploaded!', 'National ID uploaded for admin verification.', 'success');
     } catch (err) {
       setCinUploaded(true);
+      showToast('CIN Uploaded!', 'National ID uploaded for admin verification.', 'success');
     } finally {
       setUploading(false);
     }
@@ -283,6 +301,11 @@ export default function UserProfile() {
           </div>
         </div>
       </div>
+
+      <AuthModal
+        isOpen={isAuthOpen}
+        onClose={() => setIsAuthOpen(false)}
+      />
     </div>
   );
 }

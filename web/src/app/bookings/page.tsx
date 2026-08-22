@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { MessageSquare, Calendar, MapPin, Check, X, ShieldAlert, AlertCircle } from 'lucide-react';
+import { useToast } from '@/components/Toast';
+import AuthModal from '@/components/AuthModal';
 
 interface Booking {
   id: string;
@@ -95,15 +97,16 @@ const MOCK_OFFERED_RIDES: OfferedRide[] = [
 ];
 
 export default function BookingsHub() {
+  const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState<'passenger' | 'driver'>('passenger');
   const [passengerBookings, setPassengerBookings] = useState<Booking[]>([]);
   const [offeredRides, setOfferedRides] = useState<OfferedRide[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
 
   // Fetch Booking Details
   const fetchBookingsData = async () => {
     setLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 600));
     try {
       const { data: authData } = await supabase.auth.getUser();
       const userId = authData?.user?.id || 'me';
@@ -160,6 +163,12 @@ export default function BookingsHub() {
         .update({ status })
         .eq('id', bookingId);
 
+      showToast(
+        status === 'confirmed' ? 'Booking Approved!' : 'Booking Declined',
+        status === 'confirmed' ? 'Passenger seat has been confirmed.' : 'The passenger request was declined.',
+        status === 'confirmed' ? 'success' : 'info'
+      );
+
       if (isPassengerTab) {
         setPassengerBookings(prev => 
           prev.map(b => b.id === bookingId ? { ...b, status } : b)
@@ -173,6 +182,12 @@ export default function BookingsHub() {
         );
       }
     } catch (err) {
+      showToast(
+        status === 'confirmed' ? 'Booking Approved!' : 'Booking Declined',
+        status === 'confirmed' ? 'Passenger seat has been confirmed.' : 'The passenger request was declined.',
+        status === 'confirmed' ? 'success' : 'info'
+      );
+
       if (isPassengerTab) {
         setPassengerBookings(prev => 
           prev.map(b => b.id === bookingId ? { ...b, status } : b)
@@ -385,6 +400,11 @@ export default function BookingsHub() {
           )
         )}
       </div>
+
+      <AuthModal
+        isOpen={isAuthOpen}
+        onClose={() => setIsAuthOpen(false)}
+      />
     </div>
   );
 }

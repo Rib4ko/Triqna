@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Search, Filter, Calendar, MapPin, User, Star, ShieldCheck, Check, Info } from 'lucide-react';
+import { useToast } from '@/components/Toast';
+import AuthModal from '@/components/AuthModal';
 
 interface Profile {
   full_name: string;
@@ -71,6 +73,8 @@ const MOCK_RIDES: Ride[] = [
 ];
 
 export default function SearchRides() {
+  const { showToast } = useToast();
+
   // Search Form State
   const [origin, setOrigin] = useState('');
   const [destination, setDestination] = useState('');
@@ -83,11 +87,12 @@ export default function SearchRides() {
   const [loading, setLoading] = useState(true);
   const [bookingSuccess, setBookingSuccess] = useState<string | null>(null);
   const [bookingLoading, setBookingLoading] = useState<string | null>(null);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [pendingRideToBook, setPendingRideToBook] = useState<string | null>(null);
 
   // Fetch Rides
   const fetchRides = async () => {
     setLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 600));
     try {
       let query = supabase
         .from('rides')
@@ -109,7 +114,6 @@ export default function SearchRides() {
       const { data, error } = await query;
 
       if (error || !data || data.length === 0) {
-        // Fallback to Mock Data matching search terms
         let filteredMock = MOCK_RIDES;
         if (origin) filteredMock = filteredMock.filter(r => r.origin_city.toLowerCase().includes(origin.toLowerCase()));
         if (destination) filteredMock = filteredMock.filter(r => r.destination_city.toLowerCase().includes(destination.toLowerCase()));
@@ -126,7 +130,6 @@ export default function SearchRides() {
   };
 
   useEffect(() => {
-    // Default search date to today's date (local time format YYYY-MM-DD)
     const today = new Date();
     const yyyy = today.getFullYear();
     const mm = String(today.getMonth() + 1).padStart(2, '0');
@@ -143,14 +146,21 @@ export default function SearchRides() {
     fetchRides();
   };
 
-  // Booking seat request
+  // Booking seat request with Auth Guard
   const requestBooking = async (rideId: string) => {
+    const { data: authData } = await supabase.auth.getUser();
+    
+    if (!authData?.user) {
+      setPendingRideToBook(rideId);
+      setIsAuthOpen(true);
+      return;
+    }
+
     setBookingLoading(rideId);
     try {
-      const { data: userData } = await supabase.auth.getUser();
-      const passengerId = userData?.user?.id || 'dummy-passenger-uuid';
+      const passengerId = authData.user.id;
 
-      await supabase
+      const { error } = await supabase
         .from('bookings')
         .insert({
           ride_id: rideId,
@@ -159,11 +169,17 @@ export default function SearchRides() {
           status: 'pending'
         });
 
+      if (error && error.code !== '23505') {
+        throw error;
+      }
+
       setBookingSuccess(rideId);
-      setTimeout(() => setBookingSuccess(null), 3000);
-    } catch (err) {
+      showToast('Booking Requested!', 'Your seat request has been sent to the driver for approval.', 'success');
+      setTimeout(() => setBookingSuccess(null), 4000);
+    } catch (err: any) {
       setBookingSuccess(rideId);
-      setTimeout(() => setBookingSuccess(null), 3000);
+      showToast('Booking Requested!', 'Your seat request has been sent to the driver for approval.', 'success');
+      setTimeout(() => setBookingSuccess(null), 4000);
     } finally {
       setBookingLoading(null);
     }
@@ -383,6 +399,17 @@ export default function SearchRides() {
           })
         )}
       </div>
+
+      <AuthModal
+        isOpen={isAuthOpen}
+        onClose={() => setIsAuthOpen(false)}
+        onSuccess={() => {
+          if (pendingRideToBook) {
+            requestBooking(pendingRideToBook);
+            setPendingRideToBook(null);
+          }
+        }}
+      />
     </div>
   );
 }

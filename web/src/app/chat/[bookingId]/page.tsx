@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { ArrowLeft, Send, MapPin, Calendar, CreditCard } from 'lucide-react';
+import { useToast } from '@/components/Toast';
 
 interface Message {
   id: string;

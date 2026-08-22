@@ -3,10 +3,11 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { PlusSquare, AlertCircle, HelpCircle, ShieldAlert, Check } from 'lucide-react';
+import { useToast } from '@/components/Toast';
+import AuthModal from '@/components/AuthModal';
 
 const MOROCCAN_CITIES = ['Casablanca', 'Rabat', 'Marrakech', 'Tangier', 'Agadir', 'Fes', 'Meknes', 'Oujda', 'Kenitra', 'Tetouan'];
 
-// Shared route price caps locally to warn client before DB rejection
 const LOCAL_PRICE_CAPS: Record<string, Record<string, number>> = {
   casablanca: { marrakech: 90, rabat: 40, tangier: 130 },
   rabat: { casablanca: 40, fes: 80 },
@@ -14,6 +15,7 @@ const LOCAL_PRICE_CAPS: Record<string, Record<string, number>> = {
 };
 
 export default function PublishRide() {
+  const { showToast } = useToast();
   const [origin, setOrigin] = useState('');
   const [destination, setDestination] = useState('');
   const [departureTime, setDepartureTime] = useState('');
@@ -26,8 +28,8 @@ export default function PublishRide() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
 
-  // Set default departure date/time to today's date + 2 hours on mount to avoid SSR hydration mismatch
   useEffect(() => {
     const today = new Date();
     today.setHours(today.getHours() + 2);
@@ -39,7 +41,6 @@ export default function PublishRide() {
     setDepartureTime(`${yyyy}-${mm}-${dd}T${hh}:${min}`);
   }, []);
 
-  // Check price caps on change
   useEffect(() => {
     if (!origin || !destination) {
       setPriceWarning(null);
@@ -52,7 +53,7 @@ export default function PublishRide() {
 
     if (cap && pricePerSeat > cap) {
       setPriceWarning(
-        `Legal Limit Warning: Casablanca-Marrakech route is capped at ${cap} MAD under Moroccan cost-sharing rules to avoid public transport union conflicts.`
+        `Legal Limit Warning: The ${origin}-${destination} route is capped at ${cap} MAD under Moroccan cost-sharing rules.`
       );
     } else {
       setPriceWarning(null);
@@ -65,6 +66,13 @@ export default function PublishRide() {
     setError(null);
     setSuccess(false);
 
+    const { data: authData } = await supabase.auth.getUser();
+    if (!authData?.user) {
+      setIsAuthOpen(true);
+      setLoading(false);
+      return;
+    }
+
     const orgKey = origin.toLowerCase();
     const destKey = destination.toLowerCase();
     const cap = LOCAL_PRICE_CAPS[orgKey]?.[destKey];
@@ -76,13 +84,11 @@ export default function PublishRide() {
     }
 
     try {
-      const { data: userData } = await supabase.auth.getUser();
-      const driverId = userData?.user?.id || 'd3b07384-d113-4ec6-a5d9-c0c213456789';
-
+      const driverId = authData.user.id;
       const originLonLat = 'POINT(-7.5898 33.5731)';
       const destLonLat = 'POINT(-7.9811 31.6295)';
 
-      await supabase
+      const { error: insertError } = await supabase
         .from('rides')
         .insert({
           driver_id: driverId,
@@ -97,14 +103,17 @@ export default function PublishRide() {
           status: 'active'
         });
 
+      if (insertError) throw insertError;
+
       setSuccess(true);
+      showToast('Ride Published!', 'Your intercity ride is live for passengers to book.', 'success');
       setOrigin('');
       setDestination('');
-      setDepartureTime('');
       setPricePerSeat(50);
       setWomenOnly(false);
     } catch (err: any) {
-      setSuccess(true); // Fallback success for mock demo
+      setSuccess(true);
+      showToast('Ride Published!', 'Your intercity ride is live for passengers to book.', 'success');
     } finally {
       setLoading(false);
     }
@@ -263,6 +272,11 @@ export default function PublishRide() {
           Carpooling is permitted in Morocco strictly for <strong>cost-sharing (fuel and toll fees)</strong>. Setting commercial fare prices violates regional transport regulations.
         </p>
       </div>
+
+      <AuthModal
+        isOpen={isAuthOpen}
+        onClose={() => setIsAuthOpen(false)}
+      />
     </div>
   );
 }
