@@ -11,14 +11,13 @@ export default function HeaderNavLinks() {
   const pathname = usePathname();
   const [user, setUser] = useState<any>(null);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
 
   useEffect(() => {
-    // Fetch initial user auth session
     supabase.auth.getUser().then(({ data }) => {
       setUser(data.user);
     });
 
-    // Listen for auth state changes
     const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user || null);
     });
@@ -30,6 +29,11 @@ export default function HeaderNavLinks() {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
+  };
+
+  const openAuth = (mode: 'login' | 'signup') => {
+    setAuthMode(mode);
+    setIsAuthOpen(true);
   };
 
   const navItems = [
@@ -64,22 +68,30 @@ export default function HeaderNavLinks() {
         <button
           onClick={handleSignOut}
           title="Sign Out"
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold text-slate-500 hover:text-red-600 hover:bg-red-50 transition-colors ml-1 cursor-pointer"
+          className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold text-slate-500 hover:text-red-600 hover:bg-red-50 transition-colors ml-1 cursor-pointer"
         >
           <LogOut className="w-3.5 h-3.5" />
           <span>Sign Out</span>
         </button>
       ) : (
-        <button
-          onClick={() => setIsAuthOpen(true)}
-          className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100 transition-colors ml-1 cursor-pointer"
-        >
-          <LogIn className="w-3.5 h-3.5" />
-          <span>Log In</span>
-        </button>
+        <div className="flex items-center gap-1.5 ml-1">
+          <button
+            onClick={() => openAuth('login')}
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold text-slate-700 hover:text-slate-900 hover:bg-slate-200/60 transition-colors cursor-pointer"
+          >
+            <LogIn className="w-3.5 h-3.5" />
+            <span>Log In</span>
+          </button>
+          <button
+            onClick={() => openAuth('signup')}
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-blue-600 text-white hover:bg-blue-700 transition-colors cursor-pointer shadow-xs"
+          >
+            <span>Sign Up</span>
+          </button>
+        </div>
       )}
 
-      <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
+      <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} initialMode={authMode} />
     </div>
   );
 }

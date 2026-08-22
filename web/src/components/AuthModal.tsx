@@ -9,11 +9,12 @@ interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess?: () => void;
+  initialMode?: 'login' | 'signup';
 }
 
-export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps) {
+export default function AuthModal({ isOpen, onClose, onSuccess, initialMode = 'login' }: AuthModalProps) {
   const { showToast } = useToast();
-  const [mode, setMode] = useState<'login' | 'signup'>('login');
+  const [mode, setMode] = useState<'login' | 'signup'>(initialMode);
   
   // Form fields
   const [email, setEmail] = useState('');
@@ -23,6 +24,13 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
   
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (isOpen) {
+      setMode(initialMode);
+      setError(null);
+    }
+  }, [isOpen, initialMode]);
 
   if (!isOpen) return null;
 
@@ -197,6 +205,33 @@ export default function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps
             {loading ? 'Processing...' : mode === 'login' ? 'Log In' : 'Create Account'}
           </button>
         </form>
+
+        {/* Switch Mode Footer Link */}
+        <div className="text-center text-xs text-slate-500 font-medium pt-1">
+          {mode === 'login' ? (
+            <p>
+              Don't have an account?{' '}
+              <button
+                type="button"
+                onClick={() => { setMode('signup'); setError(null); }}
+                className="text-blue-600 font-bold hover:underline cursor-pointer"
+              >
+                Sign Up for free
+              </button>
+            </p>
+          ) : (
+            <p>
+              Already have an account?{' '}
+              <button
+                type="button"
+                onClick={() => { setMode('login'); setError(null); }}
+                className="text-blue-600 font-bold hover:underline cursor-pointer"
+              >
+                Log In
+              </button>
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );
