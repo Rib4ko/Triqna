@@ -1,26 +1,35 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import { supabase } from '@/lib/supabase';
-import { PlusSquare, AlertCircle, HelpCircle, ShieldAlert, Check } from 'lucide-react';
+import { PlusSquare, AlertCircle, HelpCircle, ShieldAlert, Check, MapPin, Sparkles } from 'lucide-react';
 import { useToast } from '@/components/Toast';
 import AuthModal from '@/components/AuthModal';
+import { CITY_NAMES, getCityCoordinates } from '@/lib/moroccoCities';
 
-const MOROCCAN_CITIES = ['Casablanca', 'Rabat', 'Marrakech', 'Tangier', 'Agadir', 'Fes', 'Meknes', 'Oujda', 'Kenitra', 'Tetouan'];
+const RouteMap = dynamic(() => import('@/components/RouteMap'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-[200px] rounded-2xl bg-slate-100 border border-slate-200 flex items-center justify-center text-xs text-slate-400 font-semibold">
+      Loading map preview...
+    </div>
+  ),
+});
 
 const LOCAL_PRICE_CAPS: Record<string, Record<string, number>> = {
   casablanca: { marrakech: 90, rabat: 40, tangier: 130 },
   rabat: { casablanca: 40, fes: 80 },
-  marrakech: { agadir: 70 }
+  marrakech: { agadir: 70, casablanca: 90 }
 };
 
 export default function PublishRide() {
   const { showToast } = useToast();
-  const [origin, setOrigin] = useState('');
-  const [destination, setDestination] = useState('');
+  const [origin, setOrigin] = useState('Casablanca');
+  const [destination, setDestination] = useState('Marrakech');
   const [departureTime, setDepartureTime] = useState('');
-  const [availableSeats, setAvailableSeats] = useState(4);
-  const [pricePerSeat, setPricePerSeat] = useState(50);
+  const [availableSeats, setAvailableSeats] = useState(3);
+  const [pricePerSeat, setPricePerSeat] = useState(80);
   const [womenOnly, setWomenOnly] = useState(false);
 
   // States
@@ -85,8 +94,11 @@ export default function PublishRide() {
 
     try {
       const driverId = authData.user.id;
-      const originLonLat = 'POINT(-7.5898 33.5731)';
-      const destLonLat = 'POINT(-7.9811 31.6295)';
+      const orgCoords = getCityCoordinates(origin) || [33.5731, -7.5898];
+      const destCoords = getCityCoordinates(destination) || [31.6295, -7.9811];
+
+      const originLonLat = `POINT(${orgCoords[1]} ${orgCoords[0]})`;
+      const destLonLat = `POINT(${destCoords[1]} ${destCoords[0]})`;
 
       const { error: insertError } = await supabase
         .from('rides')
@@ -120,7 +132,7 @@ export default function PublishRide() {
   };
 
   return (
-    <div className="flex flex-col gap-6 max-w-3xl mx-auto w-full">
+    <div className="flex flex-col gap-6 max-w-4xl mx-auto w-full">
       {/* Title */}
       <div className="flex flex-col gap-1 mt-1">
         <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-900 leading-tight">Offer a Ride</h1>
@@ -133,9 +145,9 @@ export default function PublishRide() {
             ✓
           </div>
           <div>
-            <h3 className="font-bold text-emerald-900 text-sm">Ride Published!</h3>
+            <h3 className="font-bold text-emerald-900 text-sm">Ride Published Successfully!</h3>
             <p className="text-xs text-emerald-700 mt-0.5 leading-normal">
-              Your ride is live. Passengers can now send booking requests to you.
+              Your ride is live. Passengers can now discover your route and request seats.
             </p>
           </div>
         </div>
@@ -151,126 +163,145 @@ export default function PublishRide() {
         </div>
       )}
 
-      {/* Responsive Airbnb-Style Card Form */}
-      <form onSubmit={handleSubmit} className="card-airbnb p-0 overflow-hidden flex flex-col shadow-md">
-        <div className="p-6 md:p-8 flex flex-col gap-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Origin */}
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[10px] uppercase font-bold tracking-wider text-slate-400">Departure City</label>
-              <div className="relative flex items-center">
-                <select 
-                  required
-                  value={origin} 
-                  onChange={(e) => setOrigin(e.target.value)}
-                  className="input-airbnb w-full pr-8 py-2.5 px-3 outline-none cursor-pointer"
-                >
-                  <option value="" className="text-slate-400">Select departure...</option>
-                  {MOROCCAN_CITIES.map(c => <option key={c} value={c} className="text-slate-900">{c}</option>)}
-                </select>
-                <div className="absolute right-3 pointer-events-none border-l-4 border-r-4 border-t-4 border-transparent border-t-slate-400 w-0 h-0" />
+      {/* Main Grid: Form + Live Trajectory Map */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Form Column */}
+        <div className="lg:col-span-7 flex flex-col gap-6">
+          <form onSubmit={handleSubmit} className="card-airbnb p-0 overflow-hidden flex flex-col shadow-md border border-slate-200/90">
+            <div className="p-5 md:p-6 flex flex-col gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Origin */}
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[10px] uppercase font-bold tracking-wider text-slate-400">Departure City</label>
+                  <div className="relative flex items-center">
+                    <select 
+                      required
+                      value={origin} 
+                      onChange={(e) => setOrigin(e.target.value)}
+                      className="input-airbnb w-full pr-8 py-2.5 px-3 outline-none cursor-pointer font-semibold"
+                    >
+                      <option value="" className="text-slate-400">Select departure...</option>
+                      {CITY_NAMES.map(c => <option key={c} value={c} className="text-slate-900">{c}</option>)}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Destination */}
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[10px] uppercase font-bold tracking-wider text-slate-400">Destination City</label>
+                  <div className="relative flex items-center">
+                    <select 
+                      required
+                      value={destination} 
+                      onChange={(e) => setDestination(e.target.value)}
+                      className="input-airbnb w-full pr-8 py-2.5 px-3 outline-none cursor-pointer font-semibold"
+                    >
+                      <option value="" className="text-slate-400">Select destination...</option>
+                      {CITY_NAMES.map(c => <option key={c} value={c} className="text-slate-900">{c}</option>)}
+                    </select>
+                  </div>
+                </div>
               </div>
-            </div>
 
-            {/* Destination */}
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[10px] uppercase font-bold tracking-wider text-slate-400">Destination City</label>
-              <div className="relative flex items-center">
-                <select 
-                  required
-                  value={destination} 
-                  onChange={(e) => setDestination(e.target.value)}
-                  className="input-airbnb w-full pr-8 py-2.5 px-3 outline-none cursor-pointer"
-                >
-                  <option value="" className="text-slate-400">Select destination...</option>
-                  {MOROCCAN_CITIES.map(c => <option key={c} value={c} className="text-slate-900">{c}</option>)}
-                </select>
-                <div className="absolute right-3 pointer-events-none border-l-4 border-r-4 border-t-4 border-transparent border-t-slate-400 w-0 h-0" />
-              </div>
-            </div>
-          </div>
-
-          {/* Date Time */}
-          <div className="flex flex-col gap-1.5">
-            <label className="text-[10px] uppercase font-bold tracking-wider text-slate-400">Date & Time of Departure</label>
-            <input 
-              required
-              type="datetime-local" 
-              value={departureTime} 
-              onChange={(e) => setDepartureTime(e.target.value)}
-              className="input-airbnb w-full px-3 py-2.5 outline-none"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Seats */}
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[10px] uppercase font-bold tracking-wider text-slate-400">Seats Offered</label>
-              <input 
-                required
-                type="number" 
-                min={1} 
-                max={6}
-                value={availableSeats} 
-                onChange={(e) => setAvailableSeats(parseInt(e.target.value) || 1)}
-                className="input-airbnb w-full px-3 py-2.5 outline-none"
-              />
-            </div>
-
-            {/* Price */}
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[10px] uppercase font-bold tracking-wider text-slate-400">Price per Seat (MAD)</label>
-              <div className="relative flex items-center">
+              {/* Date Time */}
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[10px] uppercase font-bold tracking-wider text-slate-400">Date & Time of Departure</label>
                 <input 
                   required
-                  type="number" 
-                  min={5}
-                  value={pricePerSeat} 
-                  onChange={(e) => setPricePerSeat(parseInt(e.target.value) || 0)}
-                  className="input-airbnb w-full pl-3 pr-12 py-2.5 outline-none"
+                  type="datetime-local" 
+                  value={departureTime} 
+                  onChange={(e) => setDepartureTime(e.target.value)}
+                  className="input-airbnb w-full px-3 py-2.5 outline-none font-semibold"
                 />
-                <span className="absolute right-3 text-xs text-slate-400 font-bold tracking-wider">MAD</span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Seats */}
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[10px] uppercase font-bold tracking-wider text-slate-400">Seats Offered</label>
+                  <input 
+                    required
+                    type="number" 
+                    min={1} 
+                    max={6}
+                    value={availableSeats} 
+                    onChange={(e) => setAvailableSeats(parseInt(e.target.value) || 1)}
+                    className="input-airbnb w-full px-3 py-2.5 outline-none font-semibold"
+                  />
+                </div>
+
+                {/* Price */}
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[10px] uppercase font-bold tracking-wider text-slate-400">Price per Seat (MAD)</label>
+                  <div className="relative flex items-center">
+                    <input 
+                      required
+                      type="number" 
+                      min={5}
+                      value={pricePerSeat} 
+                      onChange={(e) => setPricePerSeat(parseInt(e.target.value) || 0)}
+                      className="input-airbnb w-full pl-3 pr-12 py-2.5 outline-none font-semibold"
+                    />
+                    <span className="absolute right-3 text-xs text-slate-400 font-bold tracking-wider">MAD</span>
+                  </div>
+                </div>
               </div>
             </div>
+
+            {/* Bottom Bar with Checkbox & Submit */}
+            <div className="px-5 md:px-6 py-3.5 flex items-center justify-between bg-slate-50 border-t border-slate-100">
+              <label className="flex items-center gap-2 text-xs text-slate-700 font-semibold select-none cursor-pointer">
+                <input 
+                  type="checkbox" 
+                  checked={womenOnly}
+                  onChange={(e) => setWomenOnly(e.target.checked)}
+                  className="w-4 h-4 accent-blue-600 rounded border-slate-300 cursor-pointer"
+                />
+                Women-Only
+              </label>
+              <button 
+                type="submit" 
+                disabled={loading}
+                className="btn-primary-blue py-2.5 px-6 text-xs flex items-center gap-1.5 cursor-pointer font-bold"
+              >
+                <PlusSquare className="w-3.5 h-3.5 stroke-[2.5]" />
+                {loading ? 'Publishing...' : 'Publish Ride'}
+              </button>
+            </div>
+          </form>
+
+          {/* Price Warning Alert */}
+          {priceWarning && (
+            <div className="bg-amber-50 border border-amber-200 p-4 rounded-xl flex items-start gap-3 shadow-xs">
+              <AlertCircle className="w-4.5 h-4.5 text-amber-600 shrink-0 mt-0.5" />
+              <p className="text-xs text-amber-800 font-medium leading-normal">{priceWarning}</p>
+            </div>
+          )}
+
+          {/* Legal info */}
+          <div className="bg-blue-50/70 border border-blue-100 p-4 rounded-xl text-xs text-blue-900 font-medium flex items-start gap-3 leading-relaxed shadow-xs">
+            <HelpCircle className="w-4.5 h-4.5 text-blue-600 shrink-0 mt-0.5" />
+            <p>
+              Carpooling is permitted in Morocco strictly for <strong>cost-sharing (fuel & tolls)</strong>. Commercial fares violate transport regulations.
+            </p>
           </div>
         </div>
 
-        {/* Bottom Bar with Checkbox & Submit */}
-        <div className="px-6 md:px-8 py-4 flex items-center justify-between bg-slate-50 border-t border-slate-100">
-          <label className="flex items-center gap-2 text-xs text-slate-700 font-semibold select-none cursor-pointer">
-            <input 
-              type="checkbox" 
-              checked={womenOnly}
-              onChange={(e) => setWomenOnly(e.target.checked)}
-              className="w-4 h-4 accent-blue-600 rounded border-slate-300 cursor-pointer"
-            />
-            Women-Only ride
-          </label>
-          <button 
-            type="submit" 
-            disabled={loading}
-            className="btn-primary-blue py-2.5 px-6 text-xs flex items-center gap-1.5 cursor-pointer"
-          >
-            <PlusSquare className="w-3.5 h-3.5 stroke-[2.5]" />
-            {loading ? 'Publishing...' : 'Publish Ride'}
-          </button>
+        {/* Trajectory Map Column */}
+        <div className="lg:col-span-5 flex flex-col gap-2">
+          <div className="flex items-center gap-1.5 text-xs font-bold text-slate-700">
+            <Sparkles className="w-3.5 h-3.5 text-blue-600" />
+            <span>Route Trajectory Preview</span>
+          </div>
+          <RouteMap
+            origin={origin}
+            destination={destination}
+            onSelectCity={(city, type) => {
+              if (type === 'origin') setOrigin(city);
+              else setDestination(city);
+            }}
+          />
         </div>
-      </form>
-
-      {/* Price Warning Alert */}
-      {priceWarning && (
-        <div className="bg-amber-50 border border-amber-200 p-4 rounded-xl flex items-start gap-3 shadow-sm">
-          <AlertCircle className="w-4.5 h-4.5 text-amber-600 shrink-0 mt-0.5" />
-          <p className="text-xs text-amber-800 font-medium leading-normal">{priceWarning}</p>
-        </div>
-      )}
-
-      {/* Moroccan Legal Disclaimer */}
-      <div className="bg-blue-50/70 border border-blue-100 p-4 rounded-xl text-xs text-blue-900 font-medium flex items-start gap-3 leading-relaxed shadow-sm">
-        <HelpCircle className="w-4.5 h-4.5 text-blue-600 shrink-0 mt-0.5" />
-        <p>
-          Carpooling is permitted in Morocco strictly for <strong>cost-sharing (fuel and toll fees)</strong>. Setting commercial fare prices violates regional transport regulations.
-        </p>
       </div>
 
       <AuthModal
